@@ -6,31 +6,15 @@ import './App.css'
 
 function App() {
   let [formData, setFormData] = useState([])
-  // const data =  JSON.parse(localStorage.getItem('array')) || []
-  // setFormData(data)
-  // if(data){
-  //   setFormData([...data])
-  //   renderUI(formData);
-  // }
-  // useEffect(renderUI, [])
+ 
+  useEffect(renderUI, [])
   
-  // function renderUI(formData){
-  //   const a = formData.map((data, index) => {
-  //     return (
-  //       <div key={index} className="subjects_container">
-  //         <div>
-  //           <span>{data.subject} - </span>
-  //           <span>{data.hour} hours</span>
-  //         </div>
-  //         <div>
-  //           <button className="increase" onClick={() => increment(index)}>+</button>
-  //           <button className="decrease" onClick={() => decrement(index)}>-</button>
-  //         </div>
-  //       </div>
-  //     )
-  //   })
-   
-  // }
+  function renderUI(){
+    const data =  JSON.parse(localStorage.getItem('array')) || []
+    console.log(data)
+    setFormData(data)
+  
+  }
 
 
   let [subject, setSubject] = useState("");
@@ -47,31 +31,58 @@ function App() {
     setHour(event.target.value)
   }
 
-  function increment(ind) {
-    const formDataCopy = [...formData]
-    formDataCopy[ind] = { ...formDataCopy[ind], hour: formDataCopy[ind].hour + 1 }
-    setFormData(formDataCopy);
+  //  async function increment(ind) {
+  //   const formDataCopy = [...formData]
+  //   formDataCopy[ind] = { ...formDataCopy[ind], hour: formDataCopy[ind].hour + 1 }
+  //   setFormData(formDataCopy);
+  //   console.log(formData)
+  //   setLocalStorage(formData)
+  // }
+  
+  async function increment(ind) {
+    setFormData(prevFormData => {
+      const updatedFormData = [...prevFormData];
+      updatedFormData[ind] = { ...updatedFormData[ind], hour: updatedFormData[ind].hour + 1 };
+      setLocalStorage(updatedFormData);
+      return updatedFormData;
+    });
   }
+
+  function setLocalStorage(formData){
+    localStorage.setItem('array', JSON.stringify(formData));
+    
+  }
+  // function decrement(ind) {
+  //   const formDataCopy = [...formData]
+  //   formDataCopy[ind] = { ...formDataCopy[ind], hour: formDataCopy[ind].hour - 1 > 0 ? formDataCopy[ind].hour - 1 : 0 }
+  //   setFormData(formDataCopy);
+  //   localStorage.setItem('array', JSON.stringify(formData));
+    
+  // }
 
   function decrement(ind) {
-    const formDataCopy = [...formData]
-    formDataCopy[ind] = { ...formDataCopy[ind], hour: formDataCopy[ind].hour - 1 > 0 ? formDataCopy[ind].hour - 1 : 0 }
-    setFormData(formDataCopy);
-
+    setFormData(prevFormData => {
+      const updatedFormData = [...prevFormData];
+      updatedFormData[ind] = { ...updatedFormData[ind], hour: Math.max(updatedFormData[ind].hour - 1, 0) };
+      localStorage.setItem('array', JSON.stringify(updatedFormData));
+      return updatedFormData;
+    });
   }
-
-  function formSubmit(event) {
+  
+   function formSubmit(event) {
     event.preventDefault()
     let newObject = {
       subject: subject,
-      hour: hour
+      hour: +hour
     }
     const formDataCopy = [...formData]
     formDataCopy.push(newObject)
-    console.log(formDataCopy)
+    // console.log(formDataCopy)
     setFormData(formDataCopy);
     event.target.reset()
 
+
+    
     localStorage.setItem('array', JSON.stringify(formData));
     console.log(JSON.parse(localStorage.getItem('array')));
   }
